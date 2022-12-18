@@ -4,12 +4,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 
+import leakcanary.AppWatcher
+
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Let's watch singleton variable "Utils.helper":
+        AppWatcher.objectWatcher.expectWeaklyReachable(Utils.helper,
+            "Explain why this object should be garbage collected soon")
     }
 
     override fun onStart() {
