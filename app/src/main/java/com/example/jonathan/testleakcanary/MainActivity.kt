@@ -3,6 +3,7 @@ package com.example.jonathan.testleakcanary
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 
 import leakcanary.AppWatcher
 
@@ -13,9 +14,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Let's watch singleton variable "Utils.helper":
+        // Example 1: Let's watch singleton variable "Utils.helper":
         AppWatcher.objectWatcher.expectWeaklyReachable(Utils.helper,
             "Explain why this object should be garbage collected soon")
+
+        // Example 2:
+        val textView = findViewById<View>(R.id.helper_text)
+
+        val app = application as TlkcnrApplication
+
+        // "textView" is referenced elsewhere and can't be garbage-collected even though
+        // this Activity object is ready to be destroyed:
+        app.leakedViews.add(textView)
     }
 
     override fun onStart() {
